@@ -1,2 +1,2 @@
-Git is my version control system.
+Git is my distributed version control system.
 Git is free software.
