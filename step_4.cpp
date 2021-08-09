@@ -58,11 +58,8 @@ int main(){
 					cout<<"You cannot specify a previous day";
 				else if(day>date.getMaxDay())
 					cout<<"The day you cin is an invalid day";
-				else{
+				else
 					date=Date(date.getYear(),date.getMonth(),day);
-					for(int i=0;i<n;i++)
-						accounts[i]->settle(date);
-				}
 				break;
 			case'n'://go to next month
 				if(date.getMonth()==12)
