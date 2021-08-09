@@ -17,9 +17,10 @@ private:
 	Date record_date;
 	string id;
 	double rate;
-	double balance_per_day_this_period;
+	double balance_per_day_this_year;
 	double balance;	//balance can't be neg.
-	bool isBalanceEnough(double withdraw_money);
+	int lastYear;	//年初结算时(settle)用
+	void interestCounter(Date,double);	//infulence: record_date,balance,balance_per_day_this_year
 public:
 	savingsAccount(){}
 	savingsAccount(Date creation_date,string id,double rate);
@@ -37,23 +38,20 @@ private:
 	double credit;
 	double rate;
 	double fee;
-	double debt;		//总欠款，=本金+利息
-	double daily_debt_recently;		//loan_interest = daily_debt_recently * rate
-	double loan_interest;	//贷款利息
 	double principal;	//本金
 	double balance;		//negative number means have loan //利息和年费也算在余额里
 	double available_credit;	//available_credit=credit+balance;>=0 required;
 	bool fee_checker(Date);		//will influence -- balance
-	int year_fee_checked;	//the latest year which fee has been checked and added to balance in [settle] function
+	int lastYear;	//relation to fee.
+	int lastMonth;
+	void interestCounter(Date,double);
+	double principal_accumulate_this_month;
 public:
 	creditAccount(Date creation_date,string id,double credit,double rate,double fee);
 	creditAccount(){}
 	void show();
 	bool settle(Date settle_date);
 	bool withdraw(Date withdraw_date,double withdraw_money,string detail);
-	bool isOverLoan(double withdraw_money);
-	bool isOverCredit(double deposit_money);
 	void deposit(Date deposit_date,double deposit_money,string detail);
+	
 };
-
-
