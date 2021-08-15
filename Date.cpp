@@ -3,11 +3,22 @@
 using namespace std;
 
 Date::Date(){}
+
 Date::Date(int year,int month,int day){
     this->year=year;
     this->month=month;
     this->day=day;
 }
+
+Date::Date(string year_str,string month_str,string day_str){
+	int year = atoi(year_str.c_str());
+	int month = atoi(month_str.c_str());
+	int day = atoi(day_str.c_str());
+	this->year = year;
+	this->month = month;
+	this->day = day;
+}
+
 void Date::show(){
     cout<<this->year<<'-'<<this->month<<'-'<<this->day<<'.';
 }
@@ -107,4 +118,31 @@ int Date::getMaxDay(){
 
 int Date::getYear(){
 	return this->year;
+}
+
+Date Date::read(){
+	cout << "Please cin date data in this format:年/月/日(不需要空出0来，字符串会处理成int类型)----";
+	string date_str;
+	cin >> date_str;
+	string year_str,month_str,day_str;
+	int len = date_str.length();
+	int m = 0;		//month_str的起始位
+	for(int i = 0,j = 0;i < len;i++){
+		if(date_str[i] == '/'){
+			if(j == 0){
+				year_str = date_str.substr(0,i);
+				j++;
+				m = i + 1;
+			}
+			else if(j == 1){
+				month_str = date_str.substr(m,i);
+				day_str = date_str.substr(i+1,len);
+			}
+			else break;
+		}
+	}	
+	Date date(year_str,month_str,day_str);	
+	date.show();
+	cout<<endl;
+	return date;
 }

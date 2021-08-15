@@ -10,6 +10,7 @@ public:
 	virtual void show() = 0;
 	virtual bool settle(Date) = 0;
 	virtual bool withdraw(Date,double,string) = 0;
+	static void query(Date,Date){}
 };
 class savingsAccount:public Account{
 private:

@@ -39,7 +39,7 @@ int main(){
 				cout<<"Please cin account type('s' or 'c') & account id.\t";			
 				cin>>type>>id;
 				if(type == 's'){
-					cout<<"Please cin account interest rate(yearly).\t"
+					cout<<"Please cin account interest rate(yearly).\t";
 					cin>>rate;
 					account = new savingsAccount(date,id,rate);	
 					accounts.push_back(account);
@@ -74,7 +74,7 @@ int main(){
 				}
 				break;
 			case's'://serach all accounts info.
-				for(int i = 0;i < n;i++){
+				for(int i = 0;i < accounts.size();i++){
 					cout<<"["<<i<<"]";
 					accounts[i]->show();
 					cout<<endl;
@@ -86,11 +86,8 @@ int main(){
 					cout<<"You cannot specify a previous day";
 				else if(day>date.getMaxDay())
 					cout<<"The day you cin is an invalid day";
-				else{
+				else
 					date=Date(date.getYear(),date.getMonth(),day);
-					for(int i=0;i<n;i++)
-						accounts[i]->settle(date);
-				}
 				break;
 			case'n'://go to next month
 				if(date.getMonth()==12)
