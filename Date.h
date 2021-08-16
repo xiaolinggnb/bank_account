@@ -1,6 +1,7 @@
 #ifndef __DATE__H__
 #define __DATE__H__ 
 #include<string>
+#include<iostream>
 using namespace std;
 class Date{
 private:
@@ -28,5 +29,9 @@ public:
 	int getMaxDay();
 	int getYear();
 	static Date read();
+	friend ostream& operator<<(ostream& out,const Date& ref){
+		out<<ref.year<<'-'<<ref.month<<'-'<<ref.day<<'.';
+		return out;
+	}
 };
 #endif

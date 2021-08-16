@@ -6,7 +6,19 @@ using namespace std;
 
 double Account::bank_total=0;
 
+vector<Transaction> Account::transaction_record;
+
 double Account::getTotal(){return bank_total;}
+
+void Account::query(Date date1,Date date2){
+	cout<<endl<<"The transaction record is below."<<endl;
+	for(int i = 0;i < Account::transaction_record.size();i++){
+		if(date1 <= Account::transaction_record[i].get_date() && Account::transaction_record[i].get_date() <= date2){
+			Account::transaction_record[i].show();
+			cout<<endl;
+		}		
+	}	
+}
 
 savingsAccount::savingsAccount(Date creation_date,string id,double rate){
 	this->creation_date=creation_date;
@@ -19,7 +31,7 @@ savingsAccount::savingsAccount(Date creation_date,string id,double rate){
 }
 
 void savingsAccount::show(){
-	cout<<"account creation date is: ";this->creation_date.show();cout<<endl;
+	cout<<"account creation date is: "<<this->creation_date<<endl;
 	cout<<"account id is: "<<this->id<<endl;
 	cout<<"account profit rate is: "<<this->rate<<endl;
 	cout<<"account's balance is:"<<this->balance<<endl;
@@ -42,6 +54,10 @@ bool savingsAccount::settle(Date settle_date){
 void savingsAccount::deposit(Date deposit_date,double deposit_money,string detail){
 	this->interestCounter(deposit_date,deposit_money);	
 	Account::bank_total += deposit_money;
+	
+	//transaction record PART
+	Transaction transaction(deposit_date,this->id,deposit_money,detail);
+	Account::transaction_record.push_back(transaction);
 }
 
 void savingsAccount::interestCounter(Date new_date,double money){
@@ -51,10 +67,16 @@ void savingsAccount::interestCounter(Date new_date,double money){
 	this->balance += money;
 }
 
-bool savingsAccount::withdraw(Date withdraw_date,double withdraw_money,string detail){
-	if(this->balance >= withdraw_money){
+bool savingsAccount::withdraw(Date withdraw_date,double withdraw_money,string detail){		//withdraw_money is positive num WHEN cin.
+	if(this->balance >= withdraw_money){													//but turn to neg WHEN using in member functions.
 		this->interestCounter(withdraw_date,-withdraw_money);
 		Account::bank_total -= withdraw_money;	
+
+		//transaction record PART
+		Transaction transaction(withdraw_date,this->id,-withdraw_money,detail);
+		Account::transaction_record.push_back(transaction);
+		//
+
 		return true; 
 	}
 	else{
@@ -130,6 +152,10 @@ bool creditAccount::withdraw(Date withdraw_date,double withdraw_money,string det
 		this->interestCounter(withdraw_date,-withdraw_money);
 		this->balance -= withdraw_money;
 		Account::bank_total -= withdraw_money;
+		
+		//transaction record PART
+		Account::transaction_record.push_back(Transaction(withdraw_date,this->id,-withdraw_money,detail));
+		//
 	}
 	return money_flag;
 }
@@ -138,4 +164,8 @@ void creditAccount::deposit(Date deposit_date,double deposit_money,string detail
 	this->balance += deposit_money;
 	if(this->balance < 0) this->interestCounter(deposit_date,deposit_money);
 	Account::bank_total += deposit_money;	
+	
+	//transaction record PART
+	Account::transaction_record.push_back(Transaction(deposit_date,this->id,deposit_money,detail));
+	//	
 }

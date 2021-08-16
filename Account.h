@@ -1,16 +1,20 @@
 #include<string>
 #include"Date.h"
+#include"Transaction.h"
+#include<vector>
 using namespace std;
+
 class Account{
 protected:
 	static double bank_total;
+	static vector<Transaction>transaction_record;	
 public:	
 	static double getTotal();
 	virtual	void deposit(Date,double,string) = 0;
 	virtual void show() = 0;
 	virtual bool settle(Date) = 0;
 	virtual bool withdraw(Date,double,string) = 0;
-	static void query(Date,Date){}
+	static void query(Date,Date);
 };
 class savingsAccount:public Account{
 private:

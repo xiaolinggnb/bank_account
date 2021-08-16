@@ -55,7 +55,7 @@ int main(){
 				}
 				break;
 			case'd'://deposit cash
-				cout<<"Please cin index of accounts && amount of deposit cash: "<<endl;
+				cout<<"Please cin index of accounts && amount of deposit cash && description: "<<endl;
 				cin>>index>>amount;
 				getline(cin,desc);
 				accounts[index]->deposit(date,amount,desc);cout<<endl;
@@ -63,7 +63,7 @@ int main(){
 				cout<<"deal discription: "<<desc<<endl;
 				break;
 			case'w'://withdraw cash
-				cout<<"Please cin index of accounts && amount of withdraw cash: "<<endl;
+				cout<<"Please cin index of accounts && amount of withdraw cash && description: "<<endl;
 				cin>>index>>amount;
 				getline(cin,desc);
 				bool flag;

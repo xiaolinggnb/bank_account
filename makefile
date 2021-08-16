@@ -1,2 +1,2 @@
-a.out:Account.cpp step_4.cpp Date.cpp
-	g++ Account.cpp step_4.cpp Date.cpp
+a.out:Account.cpp step5.cpp Date.cpp Transaction.cpp
+	g++ Account.cpp step5.cpp Date.cpp Transaction.cpp

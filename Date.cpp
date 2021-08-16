@@ -77,21 +77,13 @@ void Date::DateAdder(){
 }
 bool Date::operator<(Date date){
 	int flag=0;		//default set to 0, means false condition [>=].
-	if(this->year<=date.year){
-		if(this->month<date.month){
-			flag=1;
-		}
-		else if(this->month==date.month){
-			if(this->day<date.day){
-				flag=1;
-			}
-		}
-	}
+	if(this->year < date.year) flag = 1;
+	if(this->year == date.year) if(this->month < date.month ||(this->month == date.month && this->day < date.day) ) flag=1;
 	if(flag) return true;
 	else return false;
 }
 bool Date::operator<=(Date date){
-	if(*this<date||*this==date)return true;
+	if(*this < date|| *this == date) return true;
 	else return false;
 }
 
@@ -142,7 +134,6 @@ Date Date::read(){
 		}
 	}	
 	Date date(year_str,month_str,day_str);	
-	date.show();
-	cout<<endl;
+	cout<<"The date you've just input is: "<<date<<'.'<<endl;
 	return date;
 }
