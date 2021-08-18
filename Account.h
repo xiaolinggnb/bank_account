@@ -44,7 +44,6 @@ private:
 	double rate;
 	double fee;
 	double principal;	//本金
-	double balance;		//negative number means have loan //利息和年费也算在余额里
 	double available_credit;	//available_credit=credit+balance;>=0 required;
 	bool fee_checker(Date);		//will influence -- balance
 	int lastYear;	//relation to fee.

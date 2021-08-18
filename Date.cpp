@@ -11,9 +11,9 @@ Date::Date(int year,int month,int day){
 }
 
 Date::Date(string year_str,string month_str,string day_str){
-	int year = atoi(year_str.c_str());
-	int month = atoi(month_str.c_str());
-	int day = atoi(day_str.c_str());
+	int year = stoi(year_str);
+	int month = stoi(month_str);
+	int day = stoi(day_str);
 	this->year = year;
 	this->month = month;
 	this->day = day;

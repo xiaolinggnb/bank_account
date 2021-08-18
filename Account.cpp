@@ -93,7 +93,6 @@ creditAccount::creditAccount(Date creation_date,string id,double credit,double r
 	this->rate = rate;
 	this->fee = fee;
 	this->principal = 0;
-	this->balance = 0;
 	this->available_credit = credit;
 	this->lastYear = creation_date.getYear();
 	this->principal_accumulate_this_month = 0;
@@ -106,33 +105,39 @@ void creditAccount::show(){
 	cout<<"account rate is: "<<this->rate<<endl;
 	cout<<"account available credit is: "<<this->available_credit<<endl;
 	cout<<"account principal is: "<<this->principal<<endl;
-	cout<<"account balance is: "<<this->balance<<endl;
 	cout<<"account member year fee is: "<<this->fee<<endl;
 }
 
 bool creditAccount::settle(Date settle_date){
 	bool money_flag = false;	//如果发现有费用相关变化，标志变为真
 
+	if(this->lastMonth != settle_date.getMonth()){
+		if(this->principal < 0){	//信用卡账户按月结息
+			money_flag = true;
+			this->interestCounter(settle_date,0);
+			double interest = this->principal_accumulate_this_month * this->rate;	//patm set to be neg.so interest is neg.
+			this->principal += interest;	//balance & interest both are neg.
+			this->principal_accumulate_this_month = 0;
+			//about available_credit part
+			if(-this->principal >= this->credit) this->available_credit = 0;	//principal在负数域时小于信用额度
+			else this->available_credit = this->credit + this->principal;
+		
+			Account::bank_total += interest;
+		}
+		else{	//不欠钱时，账户金额信息不用变，更新时间信息就行
+			this->record_date = settle_date;
+		}	
+	}
+	
 	if(this->lastYear != settle_date.getYear()){
 		money_flag = true;
 		double fee_owed = this->fee * (settle_date.getYear() - this->lastYear);
-		this->balance -= fee_owed;
+		this->principal -= fee_owed;
 		Account::bank_total -= fee_owed;
 		this->lastYear = settle_date.getYear();
-	}
-
-	if(this->lastMonth != settle_date.getMonth() && this->balance < 0){	//信用卡账户按月结息
-		money_flag = true;
-		this->interestCounter(settle_date,0);
-		double interest = this->principal_accumulate_this_month * this->rate;	//patm set to be neg.so interest is neg.
-		this->balance += interest;	//balance & interest both are neg.
-
 		//about available_credit part
-		if(-this->balance >= this->credit) this->available_credit = 0;	//balance在负数域时小于信用额度
-		else this->available_credit = this->credit + this->balance;
-		
-		this->principal = this->balance;	
-		Account::bank_total += interest;
+		if(-this->principal >= this->credit) this->available_credit = 0;	//principal在负数域时小于信用额度
+		else this->available_credit = this->credit + this->principal;
 	}
 	
 	return money_flag;
@@ -150,7 +155,7 @@ bool creditAccount::withdraw(Date withdraw_date,double withdraw_money,string det
 	if(this->available_credit >= withdraw_money){
 		money_flag = true;
 		this->interestCounter(withdraw_date,-withdraw_money);
-		this->balance -= withdraw_money;
+		this->available_credit -= withdraw_money;
 		Account::bank_total -= withdraw_money;
 		
 		//transaction record PART
@@ -161,8 +166,15 @@ bool creditAccount::withdraw(Date withdraw_date,double withdraw_money,string det
 }
 
 void creditAccount::deposit(Date deposit_date,double deposit_money,string detail){
-	this->balance += deposit_money;
-	if(this->balance < 0) this->interestCounter(deposit_date,deposit_money);
+	if(this->principal >= 0) this->principal += deposit_money;
+	else{
+		this->interestCounter(deposit_date,deposit_money);
+		//credit PART 
+		if(this->principal = 0)this->available_credit = this->credit;
+		else if(-this->principal > this->credit ) this->available_credit = 0;
+		else if(-this->principal <= this->credit) this->available_credit = this->credit + this->principal;
+	}
+
 	Account::bank_total += deposit_money;	
 	
 	//transaction record PART
