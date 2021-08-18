@@ -24,7 +24,6 @@ int main(){
 	vector<Account*>accounts;	//创建账户数组，元素个数为0
 	fstream cmdfile;
 	cmdfile.open("cmdfile.txt",ios::app | ios::in | ios::out);
-
 	//preset 预处理程序
 	string action_line;
 	while(getline(cmdfile,action_line)){		
@@ -86,12 +85,12 @@ int main(){
                 break;
 			default:break;
         }
-		if(accounts.size() == 3){cout<<date<<endl;accounts[2]->show();cout<<endl;}
 	}
+	//重新打开文件
+	cmdfile.close();
+	cmdfile.open("cmdfile.txt",ios::app|ios::in|ios::out);
 	//
-	
 	cout<<"(a)add account (d)deposit (w)withdraw (s)show (c)change day (n)next month (q)query (e)exit"<<endl;
-	
 	char cmd;
 	do{
 		//show--date & total money
@@ -118,15 +117,16 @@ int main(){
 			case'a'://add account
 				cout<<"Please cin account type('s' or 'c') & account id.\t";			
 				cin>>type>>id;
+				cmdfile<<type<<' '<<id<<' ';
 				if(type == 's'){
 					cout<<"Please cin account interest rate(yearly).\t";
-					cin>>rate;
+					cin>>rate; cmdfile<<rate<<' ';
 					account = new savingsAccount(date,id,rate);	
 					accounts.push_back(account);
 				}
 				else if(type == 'c'){
 					cout<<"Please cin account credit & interest rate(daily) & fee(yearly).\t";
-					cin>>credit>>rate>>fee;
+					cin>>credit>>rate>>fee; cmdfile<<credit<<' '<<rate<<' '<<fee<<' ';
 					account = new creditAccount(date,id,credit,rate,fee);	
 					accounts.push_back(account);
 				}
@@ -136,16 +136,16 @@ int main(){
 				break;
 			case'd'://deposit cash
 				cout<<"Please cin index of accounts && amount of deposit cash && description: "<<endl;
-				cin>>index>>amount;
-				getline(cin,desc);
+				cin>>index>>amount; cmdfile<<index<<' '<<amount<<' ';
+				getline(cin,desc); cmdfile<<desc<<' ';
 				accounts[index]->deposit(date,amount,desc);cout<<endl;
 				accounts[index]->show();
 				cout<<"deal discription: "<<desc<<endl;
 				break;
 			case'w'://withdraw cash
 				cout<<"Please cin index of accounts && amount of withdraw cash && description: "<<endl;
-				cin>>index>>amount;
-				getline(cin,desc);
+				cin>>index>>amount; cmdfile<<index<<' '<<amount<<' ';
+				getline(cin,desc); cmdfile<<desc<<' ';
 				bool flag;
 				flag = accounts[index]->withdraw(date,amount,desc);
 				if(flag){
@@ -166,8 +166,10 @@ int main(){
 					cout<<"You cannot specify a previous day";
 				else if(day>date.getMaxDay())
 					cout<<"The day you cin is an invalid day";
-				else
+				else{
 					date=Date(date.getYear(),date.getMonth(),day);
+					cmdfile<<day<<' ';
+				}
 				break;
 			case'n'://go to next month
 				if(date.getMonth()==12)
@@ -184,6 +186,7 @@ int main(){
 				Account::query(date1,date2);
 				break;
 		}
+		cmdfile<<'\n';
 	}while(cmd!='e');
 	
 	for_each(accounts.begin(),accounts.end(),deleter());
