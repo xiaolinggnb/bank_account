@@ -3,6 +3,7 @@
 #include<vector>
 #include<algorithm>
 #include<fstream>
+#include<stdexcept>
 using namespace std;
 
 struct deleter{
@@ -144,13 +145,14 @@ int main(){
 				break;
 			case'w'://withdraw cash
 				cout<<"Please cin index of accounts && amount of withdraw cash && description: "<<endl;
-				cin>>index>>amount; cmdfile<<index<<' '<<amount<<' ';
-				getline(cin,desc); cmdfile<<desc<<' ';
+				cin>>index>>amount;
+				getline(cin,desc);
 				bool flag;
 				flag = accounts[index]->withdraw(date,amount,desc);
 				if(flag){
 					accounts[index]->show();
 					cout<<"deal discription: "<<desc<<endl;
+					cmdfile<<index<<' '<<amount<<' '<<desc<<' ';
 				}
 				break;
 			case's'://serach all accounts info.
@@ -161,7 +163,8 @@ int main(){
 				}
 				break;
 			case'c'://change date
-				cout<<"You want to change to which day?\t";cin>>day;
+				cout<<"You want to change to which day?\t";
+					cin>>day;
 				if(day<date.getDay())
 					cout<<"You cannot specify a previous day";
 				else if(day>date.getMaxDay())
@@ -181,8 +184,13 @@ int main(){
 					(*iter)->settle(date);	
 				break;
 			case'q'://查询一段时间内的账目
-				date1 = Date::read();
-				date2 = Date::read();
+				try{
+					date1 = Date::read();
+					date2 = Date::read();
+				}catch(...){
+					cout<<"appear an EXCEPTION in Date recognition."<<endl;
+					break;
+				}
 				Account::query(date1,date2);
 				break;
 		}

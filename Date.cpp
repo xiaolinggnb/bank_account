@@ -116,8 +116,8 @@ Date Date::read(){
 	cout << "Please cin date data in this format:年/月/日(不需要空出0来，字符串会处理成int类型)----";
 	string date_str;
 	cin >> date_str;
-	string year_str,month_str,day_str;
 	int len = date_str.length();
+	string year_str,month_str,day_str;
 	int m = 0;		//month_str的起始位
 	for(int i = 0,j = 0;i < len;i++){
 		if(date_str[i] == '/'){
@@ -132,7 +132,7 @@ Date Date::read(){
 			}
 			else break;
 		}
-	}	
+	}
 	Date date(year_str,month_str,day_str);	
 	cout<<"The date you've just input is: "<<date<<'.'<<endl;
 	return date;
