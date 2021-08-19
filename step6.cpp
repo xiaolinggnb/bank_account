@@ -110,38 +110,45 @@ int main(){
 		//输入命令，回车读取
 		cin>>cmd;
 		cout<<'\n';
-		//记录输入命令，存储到外部文件
-		if(cmd != 'e') cmdfile<<cmd<<' ';
 		//
 		//根据命令cmd执行操作
 		switch(cmd){
 			case'a'://add account
 				cout<<"Please cin account type('s' or 'c') & account id.\t";			
 				cin>>type>>id;
-				cmdfile<<type<<' '<<id<<' ';
-				if(type == 's'){
-					cout<<"Please cin account interest rate(yearly).\t";
-					cin>>rate; cmdfile<<rate<<' ';
-					account = new savingsAccount(date,id,rate);	
-					accounts.push_back(account);
+				try{
+					if(type == 's'){
+						cout<<"Please cin account interest rate(yearly).\t";
+						account = new savingsAccount(date,id,rate);	
+						accounts.push_back(account);
+						cmdfile<<cmd<<' ' <<type<<' '<<id<<' '<<rate<<endl;
+					}
+					else if(type == 'c'){
+						cout<<"Please cin account credit & interest rate(daily) & fee(yearly).\t";
+						cin>>credit>>rate>>fee;
+						account = new creditAccount(date,id,credit,rate,fee);	
+						accounts.push_back(account);
+						cmdfile<<cmd<<' '<<type<<' '<<id<<' '<<credit<<' '<<rate<<' '<<fee<<endl;
+					}
+					else{
+						cout<<"Sorry that we don't have the account TYPE you cin. Operation failed."<<endl;
+					}
 				}
-				else if(type == 'c'){
-					cout<<"Please cin account credit & interest rate(daily) & fee(yearly).\t";
-					cin>>credit>>rate>>fee; cmdfile<<credit<<' '<<rate<<' '<<fee<<' ';
-					account = new creditAccount(date,id,credit,rate,fee);	
-					accounts.push_back(account);
-				}
-				else{
-					cout<<"Sorry that we don't have the account TYPE you cin. Operation failed."<<endl;
-				}
+				catch(...){cout<<"account creation FAIL!"<<endl;}	
 				break;
 			case'd'://deposit cash
 				cout<<"Please cin index of accounts && amount of deposit cash && description: "<<endl;
-				cin>>index>>amount; cmdfile<<index<<' '<<amount<<' ';
-				getline(cin,desc); cmdfile<<desc<<' ';
-				accounts[index]->deposit(date,amount,desc);cout<<endl;
-				accounts[index]->show();
-				cout<<"deal discription: "<<desc<<endl;
+				cin>>index>>amount;
+				getline(cin,desc);
+				try{
+					accounts[index]->deposit(date,amount,desc);cout<<endl;
+					accounts[index]->show();
+					cout<<"deal discription: "<<desc<<endl;
+					cmdfile<<cmd<<' '<<index<<' '<<amount<<' '<<desc<<endl;
+				}
+				catch(...){
+					cout<<"deposit FAIL."<<endl;
+				}
 				break;
 			case'w'://withdraw cash
 				cout<<"Please cin index of accounts && amount of withdraw cash && description: "<<endl;
@@ -152,7 +159,7 @@ int main(){
 				if(flag){
 					accounts[index]->show();
 					cout<<"deal discription: "<<desc<<endl;
-					cmdfile<<index<<' '<<amount<<' '<<desc<<' ';
+					cmdfile<<cmd<<' '<<index<<' '<<amount<<' '<<desc<<endl;
 				}
 				break;
 			case's'://serach all accounts info.
@@ -164,14 +171,19 @@ int main(){
 				break;
 			case'c'://change date
 				cout<<"You want to change to which day?\t";
-					cin>>day;
+         		while(!(cin>>day)){
+             		cin.clear();         //重置cin
+             		while(cin.get()!='\n')         //删除错误输入
+                 		continue;
+             		cout<<"Please re-enter a legal number: ";  //提示用户再输入
+         		}		
 				if(day<date.getDay())
 					cout<<"You cannot specify a previous day";
 				else if(day>date.getMaxDay())
 					cout<<"The day you cin is an invalid day";
 				else{
-					date=Date(date.getYear(),date.getMonth(),day);
-					cmdfile<<day<<' ';
+					date = Date(date.getYear(),date.getMonth(),day);
+					cmdfile<<cmd<<' '<<day<<endl;
 				}
 				break;
 			case'n'://go to next month
@@ -182,6 +194,7 @@ int main(){
 			
 				for(vector<Account*>::iterator iter = accounts.begin();iter != accounts.end();++iter)
 					(*iter)->settle(date);	
+				cmdfile<<cmd<<endl;
 				break;
 			case'q'://查询一段时间内的账目
 				try{
@@ -194,7 +207,6 @@ int main(){
 				Account::query(date1,date2);
 				break;
 		}
-		cmdfile<<'\n';
 	}while(cmd!='e');
 	
 	for_each(accounts.begin(),accounts.end(),deleter());
