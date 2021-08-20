@@ -3,6 +3,7 @@
 #include<vector>
 #include<algorithm>
 #include<fstream>
+#include<sstream>
 #include<stdexcept>
 using namespace std;
 
@@ -106,6 +107,9 @@ int main(){
 		string id,desc;
 		Account* account;
 		Date date1,date2;
+		//类型校正用变量
+		string day_str;
+		string amount_str,credit_str,rate_str,fee_str;
 		//
 		//输入命令，回车读取
 		cin>>cmd;
@@ -138,13 +142,23 @@ int main(){
 				break;
 			case'd'://deposit cash
 				cout<<"Please cin index of accounts && amount of deposit cash && description: "<<endl;
-				cin>>index>>amount;
+				cin>>index>>amount_str;
+				stringstream(amount_str)>>amount;
 				getline(cin,desc);
 				try{
+					if(amount <= 0){
+						 cin.clear();
+						 throw "Please check your input. Amount required to be positive number.";
+					}
+	
+					if(!(index >= 0 && index < accounts.size()))throw "Index out of range.Check again,please.";
 					accounts[index]->deposit(date,amount,desc);cout<<endl;
 					accounts[index]->show();
 					cout<<"deal discription: "<<desc<<endl;
 					cmdfile<<cmd<<' '<<index<<' '<<amount<<' '<<desc<<endl;
+				}
+				catch(const char*e){
+					cout<<e<<endl;
 				}
 				catch(...){
 					cout<<"deposit FAIL."<<endl;
@@ -152,8 +166,19 @@ int main(){
 				break;
 			case'w'://withdraw cash
 				cout<<"Please cin index of accounts && amount of withdraw cash && description: "<<endl;
-				cin>>index>>amount;
+				cin>>index>>amount_str;
+				stringstream(amount_str)>>amount;
 				getline(cin,desc);
+				try{
+					if(amount <= 0){
+						 cout<<"Please check your input. Amount required to be positive number."<<endl;
+						 cin.clear();
+						 throw "input problem.";
+					}
+				}
+				catch(...){
+					break;
+				}
 				bool flag;
 				flag = accounts[index]->withdraw(date,amount,desc);
 				if(flag){
@@ -171,13 +196,10 @@ int main(){
 				break;
 			case'c'://change date
 				cout<<"You want to change to which day?\t";
-         		while(!(cin>>day)){
-             		cin.clear();         //重置cin
-             		while(cin.get()!='\n')         //删除错误输入
-                 		continue;
-             		cout<<"Please re-enter a legal number: ";  //提示用户再输入
-         		}		
-				if(day<date.getDay())
+				cin>>day_str;
+				stringstream(day_str)>>day;
+				if(day == 0) cout<<"Please check your input. Day required to be positive."<<endl;
+				else if(day<date.getDay())
 					cout<<"You cannot specify a previous day";
 				else if(day>date.getMaxDay())
 					cout<<"The day you cin is an invalid day";
